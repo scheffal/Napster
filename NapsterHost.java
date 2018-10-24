@@ -1,7 +1,4 @@
-import java.awt.Frame;
 import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
 import java.net.*;
 import java.io.*;
 
@@ -16,6 +13,11 @@ public class NapsterHost{
 		//TODO
 		gui = new NapsterFrame();
 		gui.getConnect().addActionListener(new Connect(gui, this));
+	}
+	
+	public void ConnectToServer(String hostName, String portNumber) {
+		
+		Socket controlSocket = new Socket();
 	}
 	
 	public static void main(String args[])

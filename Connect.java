@@ -6,6 +6,7 @@ public class Connect implements ActionListener {
 	
 	public Connect (NapsterFrame gui, NapsterHost host)
 	{
+		
 		this.gui = gui;
 		this.host = host;
 	}
@@ -24,6 +25,8 @@ public class Connect implements ActionListener {
 			//Get Hostname
 			String hostname = gui.getHostName().getText();
 			//Get Speed
+			
+			
 			
 		}
 

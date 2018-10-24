@@ -1,6 +1,4 @@
-import java.awt.Frame;
 import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
 
 public class NapsterFrame extends JFrame{
@@ -9,7 +7,7 @@ public class NapsterFrame extends JFrame{
 	private TextField portText;
 	private TextField usernameText;
 	private TextField hostNameText;
-	private Button connect;
+	private JButton connectButton;
 	
 	public NapsterFrame() {
 		setTitle("Naptster Host");
@@ -21,7 +19,7 @@ public class NapsterFrame extends JFrame{
 		GridBagConstraints c = new GridBagConstraints();
 		connectPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		
-		JButton connectButton = new JButton("Connect");
+		connectButton = new JButton("Connect");
 		//connectButton.addActionListener(this);
 		serverHostname = new TextField(20);
 		Label serverHostnameText = new Label("Server Hostname:");
@@ -118,9 +116,9 @@ public class NapsterFrame extends JFrame{
 	{
 		return this.hostNameText;
 	}
-	public Button getConnect()
+	public JButton getConnect()
 	{
-		return this.connect;
+		return this.connectButton;
 	}
 	
 	public static void main(String args[])
