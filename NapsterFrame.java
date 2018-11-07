@@ -8,19 +8,47 @@ public class NapsterFrame extends JFrame{
 	private TextField usernameText;
 	private TextField hostNameText;
 	private JButton connectButton;
+	private TextField keyword;
+	private TextField command;
+	private JButton search;
+	private JButton go;
+	private JTextArea ftpDisplay;
 	
 	public NapsterFrame() {
+		//Set up frame
 		setTitle("Naptster Host");
 		setBackground(Color.LIGHT_GRAY);
-		setSize(750,750);
-		setResizable(false);
-		JPanel connectPanel = new JPanel(new GridBagLayout());
-		//setContentPane(connectPanel);
-		GridBagConstraints c = new GridBagConstraints();
-		connectPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		setPreferredSize(new Dimension(800,600));
+		setLayout(new BorderLayout());
 		
+		
+		//Create panels
+		JPanel connectPanel = new JPanel(new GridBagLayout());
+		connectPanel.setPreferredSize(new Dimension(100,100));
+		
+		JPanel searchPanel = new JPanel(new GridBagLayout());
+		
+		JPanel ftpPanel = new JPanel(new GridBagLayout());
+		ftpPanel.setPreferredSize(new Dimension(250,250));
+		
+		//Set borders around panels
+		connectPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Connection"),
+			    BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+			
+		searchPanel.setBorder(BorderFactory.createCompoundBorder(
+			    BorderFactory.createTitledBorder("Search"),
+			    BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+				
+		ftpPanel.setBorder(BorderFactory.createCompoundBorder(
+			     BorderFactory.createTitledBorder("FTP"),
+			     BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		
+		//Constraints for connect panel
+		GridBagConstraints c = new GridBagConstraints();
+		
+		//Connect panel 
 		connectButton = new JButton("Connect");
-		//connectButton.addActionListener(this);
 		serverHostname = new TextField(20);
 		Label serverHostnameText = new Label("Server Hostname:");
 		Label port = new Label("Port:");
@@ -32,7 +60,30 @@ public class NapsterFrame extends JFrame{
 		Label speedLabel = new Label("Speed:");
 		String[] speeds = {"Ethernet"};
 		JComboBox speed = new JComboBox(speeds);
-		add(connectPanel);
+		
+		//Search panel
+		keyword = new TextField(20);
+		Label keywordLabel = new Label("Keyword:");
+		search = new JButton("Search");
+		
+		
+		//FTP pane
+		command = new TextField(50);
+		Label commandLabel = new Label("Command:");
+		go = new JButton("Go");
+		ftpDisplay = new JTextArea(5,5);
+		
+		//Constraints for search panel
+		GridBagConstraints s = new GridBagConstraints();
+		
+		//Constraints for FTP panel
+		GridBagConstraints f = new GridBagConstraints();
+		
+		//Add panels to frame
+		add(connectPanel,BorderLayout.NORTH);
+		add(searchPanel,BorderLayout.CENTER);
+		add(ftpPanel, BorderLayout.SOUTH);
+		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.insets = new Insets(2,4,2,2);
 		
@@ -97,6 +148,39 @@ public class NapsterFrame extends JFrame{
 		c.gridy = 1;
 		connectPanel.add(speed,c);
 		
+		s.gridy = 0;
+		s.gridx = 0;
+		s.fill = GridBagConstraints.HORIZONTAL;
+		s.insets = new Insets(2,4,2,2);
+		searchPanel.add(keywordLabel,s);
+		
+		s.gridx = 1;
+		searchPanel.add(keyword,s);
+		
+		s.gridx = 2;
+		searchPanel.add(search, s);
+		
+		f.gridy = 0;
+		f.gridx = 0;
+		f.fill = GridBagConstraints.HORIZONTAL;
+		f.insets = new Insets(2,4,2,2);
+		ftpPanel.add(commandLabel, f);
+		
+		f.gridx = 1;
+		ftpPanel.add(command, f);
+		
+		f.gridx = 2;
+		ftpPanel.add(go, f);
+		
+		f.gridx = 0;
+		f.gridy = 1;
+		f.gridwidth = 3;
+		f.gridheight = 10;
+		JScrollPane scroll = new JScrollPane(ftpDisplay);
+		ftpPanel.add(scroll,f);
+		
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		pack();
 		setVisible(true);
 	}
 	
