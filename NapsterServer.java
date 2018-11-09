@@ -1,3 +1,5 @@
+
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -18,6 +20,7 @@ public class NapsterServer {
             {
             	//Wait for connection from client
                 Socket connectionSocket = welcomeSocket.accept();
+                System.out.println("Something connected");
 
                 //Create a thread for each client
                 ClientHandler handler = new ClientHandler(connectionSocket);
@@ -58,7 +61,9 @@ public class NapsterServer {
             			do{
             				//Read line in from client
             				fromClient = inFromClient.readLine();
-
+            				System.out.println(fromClient);
+            				//TODO: Needs conditions to make sure it has all the info it needs.
+            				outToClient.writeUTF("received");
             				//Get command
                         			StringTokenizer tokens = new StringTokenizer(fromClient);
             				frstln = tokens.nextToken();

@@ -1,6 +1,8 @@
+
 import javax.swing.*;
 import java.awt.*;
 
+@SuppressWarnings("serial")
 public class NapsterFrame extends JFrame{
 
 	private TextField serverHostname;
@@ -13,7 +15,10 @@ public class NapsterFrame extends JFrame{
 	private JButton search;
 	private JButton go;
 	private JTextArea ftpDisplay;
+	@SuppressWarnings("rawtypes")
+	private JComboBox speed;
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public NapsterFrame() {
 		//Set up frame
 		setTitle("Naptster Host");
@@ -59,7 +64,7 @@ public class NapsterFrame extends JFrame{
 		hostNameText = new TextField(15);
 		Label speedLabel = new Label("Speed:");
 		String[] speeds = {"Ethernet"};
-		JComboBox speed = new JComboBox(speeds);
+		speed = new JComboBox(speeds);
 		
 		//Search panel
 		keyword = new TextField(20);
@@ -203,6 +208,9 @@ public class NapsterFrame extends JFrame{
 	public JButton getConnect()
 	{
 		return this.connectButton;
+	}
+	public JComboBox getSpeed(){
+		return this.speed;
 	}
 	
 	public static void main(String args[])
