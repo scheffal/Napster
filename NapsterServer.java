@@ -5,6 +5,8 @@ import java.net.*;
 import java.util.*;
 
 public class NapsterServer {
+
+
 	public static void main(String argv[]) throws Exception	
 	{
  
@@ -12,6 +14,12 @@ public class NapsterServer {
             String clientCommand;
             byte[] data;
             int port;
+		
+	    //User Table
+	    Map<String,User> userTable = new HashMap<String,User>();
+
+	    //File Table
+	    Map<String,File> fileTable = new HashMap<String,File>();
             
             //Create socket on server side       
             ServerSocket welcomeSocket = new ServerSocket(3702);
@@ -20,10 +28,9 @@ public class NapsterServer {
             {
             	//Wait for connection from client
                 Socket connectionSocket = welcomeSocket.accept();
-                System.out.println("Something connected");
 
                 //Create a thread for each client
-                ClientHandler handler = new ClientHandler(connectionSocket);
+                ClientHandler handler = new ClientHandler(connectionSocket, userTable);
                 handler.start();
             }
 	}
@@ -34,19 +41,21 @@ public class NapsterServer {
             	private DataOutputStream outToClient;
             	private BufferedReader inFromClient;
             	private Socket connectionSocket;
+		private Map<String,User> userTable;
             	String fromClient;
-                	String clientCommand;
+                	String clientCommand ="";
                 	byte[] data;
                 	int port;
             	
-            	public ClientHandler(Socket connectionSocketIn){
+            	public ClientHandler(Socket connectionSocketIn, Map<String,User> userTable){
             		connectionSocket = connectionSocketIn;
             		try{
             			//Create input and output stream for client over control connection
             			outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-                        		inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+                        	inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
             			System.out.println("User connected" + connectionSocket.getInetAddress());
+				this.userTable = userTable;
             			
             		}catch(IOException iox){
             			System.out.println("Error");
@@ -58,57 +67,44 @@ public class NapsterServer {
             		String frstln;
             		boolean done = false;
             		try{
-            			do{
-            				//Read line in from client
+					
+					//Read line in from client
             				fromClient = inFromClient.readLine();
-            				System.out.println(fromClient);
-            				//TODO: Needs conditions to make sure it has all the info it needs.
-            				outToClient.writeUTF("received");
+            				//System.out.println(fromClient);
+					
             				//Get command
-                        			StringTokenizer tokens = new StringTokenizer(fromClient);
-            				frstln = tokens.nextToken();
-                        			port = Integer.parseInt(frstln);
-                        			clientCommand = tokens.nextToken();
-                       
-                    		 
-                      			if(clientCommand.equals("retr:"))
-                      			{
-            					//Create data socket
-                    	  			Socket dataSocket = new Socket(connectionSocket.getInetAddress(), port);
-            					
-            					OutputStreamWriter dataOutToClient = new OutputStreamWriter(dataSocket.getOutputStream(), "UTF-8");
-            	
-            					//Get filename
-            			        	String fileName = tokens.nextToken();
-            					
-            					try{
-            						//Create file object
-            						File file = new File(fileName);
-
-            						//Create stream to read in from file
-            						BufferedReader read = new BufferedReader(new FileReader(file));
-            						String str;
-
-            						//Read from file and write out to client
-            						while((str = read.readLine()) != null)
-            						{	
-            							dataOutToClient.write(str);
-            						}
+                        		StringTokenizer tokens = new StringTokenizer(fromClient);
             				
-            						System.out.println("File " + fileName + " sent");
+					String userName = tokens.nextToken();
+					//System.out.println(userName);
+					String hostName = tokens.nextToken();
+					//System.out.println(hostName);
+					String speed = tokens.nextToken();
+					//System.out.println(speed);
+					
+					//Add to table if not already
+					if(userTable.containsKey(userName) == false)
+					{	
+						User current = new User(userName, hostName, speed);
+						userTable.put(userName,current);
+					}
 
+					//TODO: Needs conditions to make sure it has all the info it needs.
+            				outToClient.writeUTF("received");
 
-            						//Close all streams and socket			
-            						read.close();
-            				        	dataOutToClient.close();
-            						dataSocket.close();
-            						
-            					}catch(FileNotFoundException e)
-            					{
-            						System.out.println("File not found: " + fileName);
-            					}
+            			do{
+					
+
+					//TODO                        		
+					port = 3704;
+                        		fromClient = inFromClient.readLine();
+                      			//System.out.println(fromClient);
+					if(fromClient != null && fromClient.contains("<name>"))
+					{
+						String des = inFromClient.readLine();
+						System.out.println(des);
                       			}
-            	  									   						if(clientCommand.equals("close"))
+            	  									   						   						if(fromClient != null && fromClient.equals("close"))
             				{
             					//Close all streams and control socket
             					System.out.println("User" + connectionSocket.getInetAddress() + " disconnected");
@@ -117,7 +113,7 @@ public class NapsterServer {
             					connectionSocket.close();
             					done = true;
             				}else{
-            					System.out.println("Command not found");
+            					//System.out.println("Command not found: " + fromClient);
             				}
 
             		}while(!done);

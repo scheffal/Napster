@@ -10,7 +10,7 @@ public class NapsterHost{
 	private DataInputStream in;
 	private DataOutputStream out;
 	
-	public NapsterHost(String name, String server, String port) {
+	public NapsterHost() {
 		//TODO
 		gui = new NapsterFrame();
 		gui.getConnect().addActionListener(new Connect(gui, this));
@@ -45,13 +45,24 @@ public class NapsterHost{
 
 		while((str = read.readLine()) != null)
 		{
-			System.out.println(str);
-			outToServer.write(str);
+	
+			//System.out.println(str);
+			out.writeUTF(str + "\n");
+			out.flush();
+			//outToServer.write(str);
 		}
+		
+		out.writeBytes("close");
+		System.out.println("Here");
+
+		out.close();
+		in.close();
+		controlSocket.close();
+		
 	}
 	
 	public static void main(String args[])
 	{
-		NapsterHost host = new NapsterHost("7", "9", "9");
+		NapsterHost host = new NapsterHost();
 	}
 }
