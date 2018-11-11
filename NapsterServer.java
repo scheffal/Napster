@@ -3,6 +3,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.regex.*;
 
 public class NapsterServer {
 
@@ -30,7 +31,7 @@ public class NapsterServer {
                 Socket connectionSocket = welcomeSocket.accept();
 
                 //Create a thread for each client
-                ClientHandler handler = new ClientHandler(connectionSocket, userTable);
+                ClientHandler handler = new ClientHandler(connectionSocket, userTable, fileTable);
                 handler.start();
             }
 	}
@@ -42,12 +43,13 @@ public class NapsterServer {
             	private BufferedReader inFromClient;
             	private Socket connectionSocket;
 		private Map<String,User> userTable;
+		private Map<String,File> fileTable;
             	String fromClient;
                 	String clientCommand ="";
                 	byte[] data;
                 	int port;
             	
-            	public ClientHandler(Socket connectionSocketIn, Map<String,User> userTable){
+            	public ClientHandler(Socket connectionSocketIn, Map<String,User> userTable, Map<String,File> fileTable){
             		connectionSocket = connectionSocketIn;
             		try{
             			//Create input and output stream for client over control connection
@@ -56,6 +58,7 @@ public class NapsterServer {
 
             			System.out.println("User connected" + connectionSocket.getInetAddress());
 				this.userTable = userTable;
+				this.fileTable = fileTable;
             			
             		}catch(IOException iox){
             			System.out.println("Error");
@@ -99,10 +102,33 @@ public class NapsterServer {
 					port = 3704;
                         		fromClient = inFromClient.readLine();
                       			//System.out.println(fromClient);
-					if(fromClient != null && fromClient.contains("<name>"))
+					Pattern pattern = Pattern.compile("\\s*+<name>(.*?)</name>\\s*");
+					Pattern pattern2 = Pattern.compile("\\s*+<description>(.*?)</description>\\s*");
+
+					
+					if(fromClient != null)
 					{
-						String des = inFromClient.readLine();
-						System.out.println(des);
+						//System.out.println("Line: " + fromClient);
+						Matcher matcher = pattern.matcher(fromClient);
+						Matcher matcher2 = pattern2.matcher(fromClient);
+						String nameFile="", des="";
+						while(matcher.find())
+						{
+							//Get file name
+							nameFile = matcher.group(1);
+							System.out.println(nameFile);
+						}
+						while(matcher2.find())
+						{
+							//Get description
+							des = matcher2.group(1);
+							System.out.println(des);	
+
+							//Add to file table
+							File current = new File(userName, port, nameFile, des);
+							fileTable.put(nameFile, current);
+						}
+				
                       			}
             	  									   						   						if(fromClient != null && fromClient.equals("close"))
             				{
