@@ -9,16 +9,18 @@ public class NapsterHost{
 	private Socket socket;
 	private DataInputStream in;
 	private DataOutputStream out;
+	private Socket controlSocket;
 	
 	public NapsterHost() {
 		//TODO
 		gui = new NapsterFrame();
 		gui.getConnect().addActionListener(new Connect(gui, this));
+		gui.getSearch().addActionListener(new Connect(gui, this));
 	}
 	
 	public void ConnectToServer(String hostName, String portNumber) throws NumberFormatException, UnknownHostException, IOException, InterruptedException {
 		
-		Socket controlSocket = new Socket(hostName, Integer.parseInt(portNumber));
+		controlSocket = new Socket(hostName, Integer.parseInt(portNumber));
 		out = new DataOutputStream(controlSocket.getOutputStream());
 		in = new DataInputStream(controlSocket.getInputStream());
 		
@@ -46,22 +48,66 @@ public class NapsterHost{
 		while((str = read.readLine()) != null)
 		{
 	
-			//System.out.println(str);
+			
 			out.writeUTF(str + "\n");
 			out.flush();
-			//outToServer.write(str);
+			
 		}
 		
-		out.writeBytes("close");
-		System.out.println("Here");
+	}
 
-		out.close();
-		in.close();
-		controlSocket.close();
+	public void search(String keyword)
+	{
+		try{
+		//Create output stream
+		DataOutputStream outToServer = new DataOutputStream(controlSocket.getOutputStream());
+
+		//Create input stream
+		DataInputStream inFromServer = new DataInputStream(new BufferedInputStream(controlSocket.getInputStream()));
+
+		ServerSocket welcomeData = new ServerSocket(3704);
+
+		//Send request over control connection	
+		outToServer.writeBytes(3702 + " " + "Keyword: " + keyword + " " +  '\n');
+		
+		//Create socket on client side for data connection
+		Socket dataSocket = welcomeData.accept();
+
+		DataInputStream inData = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
+
+		while(inData.available() <= 0);
+		Thread.sleep(500);
+
+		//TODO just tests if it finds file
+		String found = inData.readUTF();
+		System.out.println(found);
+		
+		//Close all streams and sockets
+		inData.close();
+		welcomeData.close();
+		dataSocket.close();
+		}catch(IOException e)
+		{
+			System.out.println("Exception");
+		}catch(InterruptedException e)
+		{
+			//
+		}
 		
 	}
 	
-	public static void main(String args[])
+	public void disconnect()
+	{
+		try{
+			//Close control socket
+			controlSocket.close();
+		}catch(IOException e)
+		{
+			//
+		}
+	}
+	
+	public static void main(String args[]) throws Exception
 	{
 		NapsterHost host = new NapsterHost();
 	}

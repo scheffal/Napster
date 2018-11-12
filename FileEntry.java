@@ -1,10 +1,10 @@
-public class File{
+public class FileEntry{
 	protected String remoteHostName;
 	protected int portNumber;
 	protected String remoteFileName;
 	protected String description;
 
-	public File(String remoteHostName, int portNumber, String remoteFileName, String description)
+	public FileEntry(String remoteHostName, int portNumber, String remoteFileName, String description)
 	{
 		this.remoteHostName = remoteHostName;
 		this.portNumber = portNumber;

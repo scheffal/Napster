@@ -209,8 +209,17 @@ public class NapsterFrame extends JFrame{
 	{
 		return this.connectButton;
 	}
+	public JButton getSearch()
+	{
+		return this.search;
+	}
 	public JComboBox getSpeed(){
 		return this.speed;
+	}
+
+	public TextField getKeyword()
+	{
+		return this.keyword;
 	}
 	
 	public static void main(String args[])

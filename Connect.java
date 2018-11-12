@@ -20,13 +20,16 @@ public class Connect implements ActionListener {
 		
 			//Get ServerHostname
 			String serverName = gui.getServerHostname().getText();
-			System.out.println(serverName);
+			
 			//Get Port #
 			String portNumber = gui.getPort().getText();
+			System.out.println(portNumber);
 			//Get Username
 			String username = gui.getUsername().getText();
+			
 			//Get Hostname
 			String hostname = gui.getHostName().getText();
+			
 			//Get Speed
 			String speed = gui.getSpeed().getSelectedItem().toString();
 
@@ -48,6 +51,15 @@ public class Connect implements ActionListener {
 			}
 			
 			
+		}
+		if(e.getActionCommand() == "Search")
+		{
+			String key = gui.getKeyword().getText();
+			System.out.println(key);
+			
+			//TODO change to return required information and updated GUI
+			host.search(key);
+
 		}
 
 	}

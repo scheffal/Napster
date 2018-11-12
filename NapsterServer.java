@@ -20,7 +20,7 @@ public class NapsterServer {
 	    Map<String,User> userTable = new HashMap<String,User>();
 
 	    //File Table
-	    Map<String,File> fileTable = new HashMap<String,File>();
+	    Map<String,FileEntry> fileTable = new HashMap<String,FileEntry>();
             
             //Create socket on server side       
             ServerSocket welcomeSocket = new ServerSocket(3702);
@@ -43,13 +43,13 @@ public class NapsterServer {
             	private BufferedReader inFromClient;
             	private Socket connectionSocket;
 		private Map<String,User> userTable;
-		private Map<String,File> fileTable;
+		private Map<String,FileEntry> fileTable;
             	String fromClient;
                 	String clientCommand ="";
                 	byte[] data;
                 	int port;
             	
-            	public ClientHandler(Socket connectionSocketIn, Map<String,User> userTable, Map<String,File> fileTable){
+            	public ClientHandler(Socket connectionSocketIn, Map<String,User> userTable, Map<String,FileEntry> fileTable){
             		connectionSocket = connectionSocketIn;
             		try{
             			//Create input and output stream for client over control connection
@@ -98,7 +98,8 @@ public class NapsterServer {
             			do{
 					
 
-					//TODO                        		
+					//Not sure if it is  fine to just read in file like this or should create
+					//TCP connection                    		
 					port = 3704;
                         		fromClient = inFromClient.readLine();
                       			//System.out.println(fromClient);
@@ -107,42 +108,76 @@ public class NapsterServer {
 
 					
 					if(fromClient != null)
-					{
-						//System.out.println("Line: " + fromClient);
-						Matcher matcher = pattern.matcher(fromClient);
-						Matcher matcher2 = pattern2.matcher(fromClient);
-						String nameFile="", des="";
-						while(matcher.find())
+					{		
+						if(fromClient.contains("</filelist>"))
 						{
-							//Get file name
-							nameFile = matcher.group(1);
-							System.out.println(nameFile);
-						}
-						while(matcher2.find())
-						{
-							//Get description
-							des = matcher2.group(1);
-							System.out.println(des);	
+							System.out.println("out");
+							done = true;
+						}else{
+							Matcher matcher = pattern.matcher(fromClient);
+							Matcher matcher2 = pattern2.matcher(fromClient);
+							String nameFile="", des="";
+							while(matcher.find())
+							{
+								//Get file name
+								nameFile = matcher.group(1);
+								System.out.println(nameFile);
+							}
+							while(matcher2.find())
+							{	
+								//Get description
+								des = matcher2.group(1);
+								System.out.println(des);	
 
-							//Add to file table
-							File current = new File(userName, port, nameFile, des);
-							fileTable.put(nameFile, current);
+								//Add to file table
+								FileEntry current = new FileEntry(userName, port, nameFile, des);
+								fileTable.put(nameFile, current);
+							}
 						}
 				
                       			}
-            	  									   						   						if(fromClient != null && fromClient.equals("close"))
+            	  									   						   
+            		}while(!done);
+			done = false;
+			do{
+					
+					fromClient = inFromClient.readLine();
+					System.out.println(fromClient);
+
+					StringTokenizer tok = new StringTokenizer(fromClient);
+					if(tok.hasMoreTokens())
+					{
+						
+						frstln = tok.nextToken();
+						System.out.println("Line"  + frstln);
+						port = Integer.parseInt(frstln);
+						String clientCommand = tok.nextToken();
+					}
+					
+			
+					if(clientCommand.equals("Keyboard:"))								
+					{
+						String key = tok.nextToken();
+						FileEntry found = fileTable.get(key);
+						if(found == null)
+						{
+							System.out.println("not found");
+						}
+					}
+					if(fromClient != null && fromClient.equals("close"))
             				{
             					//Close all streams and control socket
             					System.out.println("User" + connectionSocket.getInetAddress() + " disconnected");
-            					inFromClient.close();
+            					inFromClient.close();	
             					outToClient.close();
             					connectionSocket.close();
             					done = true;
             				}else{
-            					//System.out.println("Command not found: " + fromClient);
+            					System.out.println("Command not found: " + fromClient);
             				}
-
-            		}while(!done);
+			}while(!done);
+			
+			
             		}catch(IOException iox){
             			
             			System.out.println("Error");	
