@@ -1,6 +1,7 @@
 
 import javax.swing.*;
 import java.awt.*;
+import javax.swing.table.*;
 
 @SuppressWarnings("serial")
 public class NapsterFrame extends JFrame{
@@ -17,6 +18,7 @@ public class NapsterFrame extends JFrame{
 	private JTextArea ftpDisplay;
 	@SuppressWarnings("rawtypes")
 	private JComboBox speed;
+	private JTable filesTable;
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public NapsterFrame() {
@@ -70,6 +72,15 @@ public class NapsterFrame extends JFrame{
 		keyword = new TextField(20);
 		Label keywordLabel = new Label("Keyword:");
 		search = new JButton("Search");
+	
+		DefaultTableModel model = new DefaultTableModel();
+		model.addRow(new Object[] {"3", "3", "3"});
+		model.addRow(new Object[] {"3", "3", "3"});
+		filesTable = new JTable(model);
+
+		model.addColumn("Speed");
+		model.addColumn("Hostname");
+		model.addColumn("Filename");
 		
 		
 		//FTP pane
@@ -164,6 +175,12 @@ public class NapsterFrame extends JFrame{
 		
 		s.gridx = 2;
 		searchPanel.add(search, s);
+
+		s.gridy = 2;
+		s.gridx = 1;
+		s.weightx = 3;
+		s.gridheight = 10;
+		searchPanel.add(new JScrollPane(filesTable),s);
 		
 		f.gridy = 0;
 		f.gridx = 0;
