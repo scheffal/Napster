@@ -68,7 +68,7 @@ public class NapsterHost{
 		ServerSocket welcomeData = new ServerSocket(3704);
 
 		//Send request over control connection	
-		outToServer.writeBytes(3702 + " " + "Keyword: " + keyword + " " +  '\n');
+		outToServer.writeBytes(3704 + " " + "Keyword: " + keyword + " " +  '\n');
 		
 		//Create socket on client side for data connection
 		Socket dataSocket = welcomeData.accept();
@@ -93,6 +93,7 @@ public class NapsterHost{
 		{
 			//
 		}
+		System.out.println("END OF SEARCH");
 		
 	}
 	

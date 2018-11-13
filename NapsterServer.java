@@ -95,6 +95,9 @@ public class NapsterServer {
 					//TODO: Needs conditions to make sure it has all the info it needs.
             				outToClient.writeUTF("received");
 
+					String nameFile = "";
+					FileEntry current = null;
+
             			do{
 					
 
@@ -106,31 +109,29 @@ public class NapsterServer {
 					Pattern pattern = Pattern.compile("\\s*+<name>(.*?)</name>\\s*");
 					Pattern pattern2 = Pattern.compile("\\s*+<description>(.*?)</description>\\s*");
 
-					
+										
+
 					if(fromClient != null)
 					{		
 						if(fromClient.contains("</filelist>"))
 						{
-							System.out.println("out");
 							done = true;
 						}else{
 							Matcher matcher = pattern.matcher(fromClient);
 							Matcher matcher2 = pattern2.matcher(fromClient);
-							String nameFile="", des="";
+							String des="";
 							while(matcher.find())
 							{
 								//Get file name
 								nameFile = matcher.group(1);
-								System.out.println(nameFile);
 							}
 							while(matcher2.find())
 							{	
 								//Get description
-								des = matcher2.group(1);
-								System.out.println(des);	
+								des = matcher2.group(1);	
 
 								//Add to file table
-								FileEntry current = new FileEntry(userName, port, nameFile, des);
+								current = new FileEntry(userName, port, nameFile, des);
 								fileTable.put(nameFile, current);
 							}
 						}
@@ -142,29 +143,50 @@ public class NapsterServer {
 			do{
 					
 					fromClient = inFromClient.readLine();
-					System.out.println(fromClient);
-
+					String clientCommand = "";
 					StringTokenizer tok = new StringTokenizer(fromClient);
+
 					if(tok.hasMoreTokens())
 					{
-						
 						frstln = tok.nextToken();
-						System.out.println("Line"  + frstln);
 						port = Integer.parseInt(frstln);
-						String clientCommand = tok.nextToken();
+						clientCommand = tok.nextToken();
 					}
-					
-			
-					if(clientCommand.equals("Keyboard:"))								
+				
+					if(clientCommand.equals("Keyword:"))							
 					{
+				
+						//Create socket on server side
+						Socket dataSocket = new Socket(connectionSocket.getInetAddress(), port);
+						
+						//Create output stream to client
+						DataOutputStream out = new DataOutputStream(dataSocket.getOutputStream());
+					
 						String key = tok.nextToken();
-						FileEntry found = fileTable.get(key);
-						if(found == null)
+						
+						Iterator it = fileTable.entrySet().iterator();
+	
+						String found = null;
+						
+						while(it.hasNext())
 						{
-							System.out.println("not found");
+							Map.Entry entry = (Map.Entry) it.next();
+							
+							FileEntry file = (FileEntry) entry.getValue(); 
+							if(file.description.contains(key))
+							{
+								//TODO need to send information to host
+								found = "FOUND";	
+							}
 						}
+
+						out.writeUTF(found + " \n");
+
+						out.close();
+						dataSocket.close();
+
 					}
-					if(fromClient != null && fromClient.equals("close"))
+					else if(clientCommand.equals("close"))
             				{
             					//Close all streams and control socket
             					System.out.println("User" + connectionSocket.getInetAddress() + " disconnected");
@@ -173,7 +195,7 @@ public class NapsterServer {
             					connectionSocket.close();
             					done = true;
             				}else{
-            					System.out.println("Command not found: " + fromClient);
+            					System.out.println("Command not found: " + clientCommand);
             				}
 			}while(!done);
 			
