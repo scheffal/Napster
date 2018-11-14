@@ -175,8 +175,10 @@ public class NapsterServer {
 							FileEntry file = (FileEntry) entry.getValue(); 
 							if(file.description.contains(key))
 							{
-								//TODO need to send information to host
-								found = "FOUND";	
+								//Send remote host name, port number, remote file name, connection speed
+								//Search user's table for info
+								User remoteHost = userTable.get(file.userName);
+								found = remoteHost.hostName + " " + file.portNumber + " " + file.remoteFileName + " " + remoteHost.speed;	
 							}
 						}
 
@@ -208,3 +210,4 @@ public class NapsterServer {
             	}
 
             }
+

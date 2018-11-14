@@ -2,6 +2,7 @@
 import javax.swing.*;
 import java.net.*;
 import java.io.*;
+import java.util.*;
 
 public class NapsterHost{
 
@@ -12,7 +13,6 @@ public class NapsterHost{
 	private Socket controlSocket;
 	
 	public NapsterHost() {
-		//TODO
 		gui = new NapsterFrame();
 		gui.getConnect().addActionListener(new Connect(gui, this));
 		gui.getSearch().addActionListener(new Connect(gui, this));
@@ -78,9 +78,18 @@ public class NapsterHost{
 		while(inData.available() <= 0);
 		Thread.sleep(500);
 
-		//TODO just tests if it finds file
+		//Tokenize return
 		String found = inData.readUTF();
 		System.out.println(found);
+	
+		StringTokenizer tok = new StringTokenizer(found);
+		String remoteHostName = tok.nextToken();
+		String remotePort = tok.nextToken();
+		String remoteFileName = tok.nextToken();
+		String remoteSpeed = tok.nextToken();
+
+		//Display table
+		gui.addRow(remoteFileName, (remoteHostName + "/" + remotePort), remoteSpeed);
 		
 		//Close all streams and sockets
 		inData.close();
@@ -113,3 +122,4 @@ public class NapsterHost{
 		NapsterHost host = new NapsterHost();
 	}
 }
+

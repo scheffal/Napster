@@ -1,12 +1,12 @@
 public class FileEntry{
-	protected String remoteHostName;
+	protected String userName;
 	protected int portNumber;
 	protected String remoteFileName;
 	protected String description;
 
-	public FileEntry(String remoteHostName, int portNumber, String remoteFileName, String description)
+	public FileEntry(String userName, int portNumber, String remoteFileName, String description)
 	{
-		this.remoteHostName = remoteHostName;
+		this.userName = userName;
 		this.portNumber = portNumber;
 		this.remoteFileName = remoteFileName;
 		this.description = description;
@@ -14,3 +14,4 @@ public class FileEntry{
 
 
 }
+

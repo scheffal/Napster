@@ -19,6 +19,7 @@ public class NapsterFrame extends JFrame{
 	@SuppressWarnings("rawtypes")
 	private JComboBox speed;
 	private JTable filesTable;
+	DefaultTableModel model;
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public NapsterFrame() {
@@ -73,9 +74,7 @@ public class NapsterFrame extends JFrame{
 		Label keywordLabel = new Label("Keyword:");
 		search = new JButton("Search");
 	
-		DefaultTableModel model = new DefaultTableModel();
-		model.addRow(new Object[] {"3", "3", "3"});
-		model.addRow(new Object[] {"3", "3", "3"});
+		model = new DefaultTableModel();
 		filesTable = new JTable(model);
 
 		model.addColumn("Speed");
@@ -180,7 +179,11 @@ public class NapsterFrame extends JFrame{
 		s.gridx = 1;
 		s.weightx = 3;
 		s.gridheight = 10;
-		searchPanel.add(new JScrollPane(filesTable),s);
+		filesTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
+		filesTable.setFillsViewportHeight(true); 
+		JScrollPane table = new JScrollPane(filesTable);
+table.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		searchPanel.add(table,s);
 		
 		f.gridy = 0;
 		f.gridx = 0;
@@ -199,11 +202,16 @@ public class NapsterFrame extends JFrame{
 		f.gridwidth = 3;
 		f.gridheight = 10;
 		JScrollPane scroll = new JScrollPane(ftpDisplay);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		ftpPanel.add(scroll,f);
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
+	}
+	public void addRow(String fileName, String host, String speed){
+		model.addRow(new Object[] {fileName, host, speed});
+	
 	}
 	
 	public TextField getServerHostname()
@@ -244,3 +252,4 @@ public class NapsterFrame extends JFrame{
 		NapsterFrame frame = new NapsterFrame();
 	}
 }
+
