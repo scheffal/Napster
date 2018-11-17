@@ -47,8 +47,6 @@ public class NapsterHost{
 
 		while((str = read.readLine()) != null)
 		{
-	
-			
 			out.writeUTF(str + "\n");
 			out.flush();
 			
@@ -59,6 +57,8 @@ public class NapsterHost{
 	public void search(String keyword)
 	{
 		try{
+		gui.removeAllRows();
+
 		//Create output stream
 		DataOutputStream outToServer = new DataOutputStream(controlSocket.getOutputStream());
 
@@ -78,19 +78,23 @@ public class NapsterHost{
 		while(inData.available() <= 0);
 		Thread.sleep(500);
 
-		//Tokenize return
-		String found = inData.readUTF();
-		System.out.println(found);
-	
-		StringTokenizer tok = new StringTokenizer(found);
-		String remoteHostName = tok.nextToken();
-		String remotePort = tok.nextToken();
-		String remoteFileName = tok.nextToken();
-		String remoteSpeed = tok.nextToken();
+		while(inData.available() != 0)
+		{
+			//Tokenize return
+			String found = inData.readUTF();
 
-		//Display table
-		gui.addRow(remoteFileName, (remoteHostName + "/" + remotePort), remoteSpeed);
-		
+			if(found != null)
+			{	
+				StringTokenizer tok = new StringTokenizer(found);
+				String remoteHostName = tok.nextToken();
+				String remotePort = tok.nextToken();
+				String remoteFileName = tok.nextToken();
+				String remoteSpeed = tok.nextToken();
+
+				//Display table
+				gui.addRow(remoteFileName, (remoteHostName + "/" + remotePort), remoteSpeed);
+			}
+		}
 		//Close all streams and sockets
 		inData.close();
 		welcomeData.close();
@@ -102,7 +106,6 @@ public class NapsterHost{
 		{
 			//
 		}
-		System.out.println("END OF SEARCH");
 		
 	}
 	

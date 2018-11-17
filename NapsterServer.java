@@ -179,10 +179,11 @@ public class NapsterServer {
 								//Search user's table for info
 								User remoteHost = userTable.get(file.userName);
 								found = remoteHost.hostName + " " + file.portNumber + " " + file.remoteFileName + " " + remoteHost.speed;	
+								out.writeUTF(found + " \n");
 							}
 						}
 
-						out.writeUTF(found + " \n");
+						
 
 						out.close();
 						dataSocket.close();

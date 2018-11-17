@@ -213,6 +213,11 @@ table.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		model.addRow(new Object[] {fileName, host, speed});
 	
 	}
+
+	public void removeAllRows()
+	{
+		model.setRowCount(0);
+	}
 	
 	public TextField getServerHostname()
 	{
