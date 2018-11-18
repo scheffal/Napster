@@ -1,4 +1,3 @@
-
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -60,6 +59,17 @@ public class Connect implements ActionListener {
 			//TODO change to return required information and updated GUI
 			host.search(key);
 
+		}
+		if(e.getActionCommand() == "Go"){
+			String command = gui.getCommand().getText();
+			
+			try {
+				host.command(command);
+				gui.getCommand().setText("");
+			} catch (NumberFormatException | IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 
 	}

@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.*;
@@ -251,10 +250,18 @@ table.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	{
 		return this.keyword;
 	}
+	public TextField getCommand(){
+		return this.command;
+	}
+	public JButton getGo(){
+		return this.go;
+	}
+	public JTextArea getFTPText(){
+		return this.ftpDisplay;
+	}
 	
 	public static void main(String args[])
 	{
 		NapsterFrame frame = new NapsterFrame();
 	}
 }
-
