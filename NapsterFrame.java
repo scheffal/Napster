@@ -65,13 +65,15 @@ public class NapsterFrame extends JFrame{
 		Label hostName = new Label("Hostname:");
 		hostNameText = new TextField(15);
 		Label speedLabel = new Label("Speed:");
-		String[] speeds = {"Ethernet"};
+		String[] speeds = {"Ethernet", "T1"};
 		speed = new JComboBox(speeds);
+		
 		
 		//Search panel
 		keyword = new TextField(20);
 		Label keywordLabel = new Label("Keyword:");
 		search = new JButton("Search");
+		search.setEnabled(false);
 	
 		model = new DefaultTableModel();
 		filesTable = new JTable(model);
@@ -208,6 +210,11 @@ table.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		pack();
 		setVisible(true);
 	}
+	public void setSearch(boolean val)
+	{
+		search.setEnabled(val);
+	}	
+
 	public void addRow(String fileName, String host, String speed){
 		model.addRow(new Object[] {fileName, host, speed});
 	
@@ -265,3 +272,5 @@ table.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		NapsterFrame frame = new NapsterFrame();
 	}
 }
+
+

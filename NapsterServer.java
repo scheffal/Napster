@@ -158,7 +158,7 @@ public class NapsterServer {
 						clientCommand = tok.nextToken();
 					}
 				
-					if(clientCommand.equals("Keyword:"))							
+								if(clientCommand.equals("Keyword:"))							
 					{
 				
 						//Create socket on server side
@@ -189,8 +189,8 @@ public class NapsterServer {
 							}
 						}
 
+					 	out.writeUTF("\n");
 						
-
 						out.close();
 						dataSocket.close();
 
@@ -225,8 +225,13 @@ public class NapsterServer {
             				fileTable.remove(x);
             			}
             			System.out.println("Error");	
-            		}
+            		}catch(NoSuchElementException e)
+			{
+				System.out.println("Incorrect input");
+			}
 
             	}
 
             }
+
+

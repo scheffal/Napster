@@ -20,14 +20,26 @@ public class NapsterHost{
 		gui.getGo().addActionListener(new Connect(gui, this));
 	}
 	
-	public void ConnectToServer(String hostName, String portNumber) throws NumberFormatException, UnknownHostException, IOException, InterruptedException {
+	public boolean ConnectToServer() throws NumberFormatException, UnknownHostException, IOException, InterruptedException {
 		
-		controlSocket = new Socket(hostName, Integer.parseInt(portNumber));
+		String serverHostname = gui.getServerHostname().getText();
+		String portNumber = gui.getPort().getText();
+		String hostname = gui.getHostName().getText();
+		String username = gui.getUsername().getText();
+		String speed = gui.getSpeed().getSelectedItem().toString();
+
+		if((serverHostname.equals("")) || (portNumber.equals("")) || (hostname.equals("")) || (username.equals("")) || (speed.equals("")))
+		{
+			System.out.println("Invalid input\n");
+			return false;
+		}
+
+		controlSocket = new Socket(serverHostname, Integer.parseInt(portNumber));
 		out = new DataOutputStream(controlSocket.getOutputStream());
 		in = new DataInputStream(controlSocket.getInputStream());
 		
-		out.writeUTF(gui.getUsername().getText() +" "+gui.getHostName().getText()+" "+gui.getSpeed().getSelectedItem().toString()+"\n");
-		
+		out.writeUTF(username +" "+ hostname + " "+ speed +"\n");
+	
 		while(in.available() <=0 );
 		Thread.sleep(500);
 		
@@ -36,7 +48,7 @@ public class NapsterHost{
 		if(!ack.equals("received")){
 			
 			System.out.println("Error getting info!");
-			return;
+			return false;
 		}
 		
 		File fileList = new File("filelist.xml");
@@ -60,7 +72,7 @@ public class NapsterHost{
 		HostServer handler = new HostServer(serverPort);
 		handler.start();
 		
-		
+		return true;
 	}
 
 	public void search(String keyword)
@@ -91,10 +103,11 @@ public class NapsterHost{
 		{
 			//Tokenize return
 			String found = inData.readUTF();
+			StringTokenizer tok = new StringTokenizer(found);
 
-			if(found != null)
+			if(tok.hasMoreTokens())
 			{	
-				StringTokenizer tok = new StringTokenizer(found);
+				
 				String remoteHostName = tok.nextToken();
 				String remotePort = tok.nextToken();
 				String remoteFileName = tok.nextToken();
@@ -193,7 +206,7 @@ public class NapsterHost{
 			controlSocket.close();
 		}catch(IOException e)
 		{
-			//
+			System.out.println("ERROR");
 		}
 	}
 	
@@ -287,3 +300,5 @@ class HostServer extends Thread{
     }
 	}
 }
+
+
