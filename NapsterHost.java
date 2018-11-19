@@ -18,6 +18,7 @@ public class NapsterHost{
 		gui.getConnect().addActionListener(new Connect(gui, this));
 		gui.getSearch().addActionListener(new Connect(gui, this));
 		gui.getGo().addActionListener(new Connect(gui, this));
+		gui.addWindowListener(new Disconnect(gui, this));
 	}
 	
 	public boolean ConnectToServer() throws NumberFormatException, UnknownHostException, IOException, InterruptedException {
@@ -202,8 +203,14 @@ public class NapsterHost{
 	public void disconnect()
 	{
 		try{
+			out.flush();
+			out.writeBytes("Close\n");
+
 			//Close control socket
 			controlSocket.close();
+
+			//Exit host
+			System.exit(0);
 		}catch(IOException e)
 		{
 			System.out.println("ERROR");

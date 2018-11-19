@@ -68,7 +68,6 @@ public class NapsterFrame extends JFrame{
 		String[] speeds = {"Ethernet", "T1"};
 		speed = new JComboBox(speeds);
 		
-		
 		//Search panel
 		keyword = new TextField(20);
 		Label keywordLabel = new Label("Keyword:");
@@ -183,7 +182,7 @@ public class NapsterFrame extends JFrame{
 		filesTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		filesTable.setFillsViewportHeight(true); 
 		JScrollPane table = new JScrollPane(filesTable);
-table.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		table.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		searchPanel.add(table,s);
 		
 		f.gridy = 0;
@@ -205,8 +204,6 @@ table.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		JScrollPane scroll = new JScrollPane(ftpDisplay);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		ftpPanel.add(scroll,f);
-		
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
 	}

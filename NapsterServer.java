@@ -51,7 +51,7 @@ public class NapsterServer {
                 	User curr;
             	
             	public ClientHandler(Socket connectionSocketIn, Map<String,User> userTable, Map<String,FileEntry> fileTable, int port){
-            		System.out.println(port);
+            	
             		connectionSocket = connectionSocketIn;
             		try{
             			//Create input and output stream for client over control connection
@@ -76,17 +76,17 @@ public class NapsterServer {
 					
 					//Read line in from client
             				fromClient = inFromClient.readLine();
-            				//System.out.println(fromClient);
+            			
 					
             				//Get command
                         		StringTokenizer tokens = new StringTokenizer(fromClient);
             				
 					String userName = tokens.nextToken();
-					//System.out.println(userName);
+					
 					String hostName = tokens.nextToken();
-					//System.out.println(hostName);
+					
 					String speed = tokens.nextToken();
-					//System.out.println(speed);
+					
 
 					//Add to table if not already
 					if(userTable.containsKey(userName) == false)
@@ -104,12 +104,7 @@ public class NapsterServer {
 
             			do{
 					
-
-					//Not sure if it is  fine to just read in file like this or should create
-					//TCP connection                    		
-					//port = 3704;
                         		fromClient = inFromClient.readLine();
-                      			//System.out.println(fromClient);
 					Pattern pattern = Pattern.compile("\\s*+<name>(.*?)</name>\\s*");
 					Pattern pattern2 = Pattern.compile("\\s*+<description>(.*?)</description>\\s*");
 
@@ -151,14 +146,23 @@ public class NapsterServer {
 					String clientCommand = "";
 					StringTokenizer tok = new StringTokenizer(fromClient);
 
-					if(tok.hasMoreTokens())
-					{
-						frstln = tok.nextToken();
-						port = Integer.parseInt(frstln);
-						clientCommand = tok.nextToken();
-					}
+				if(fromClient.equals("Close"))
+            			{
+            				//Close all streams and control socket
+            				System.out.println("User" + connectionSocket.getInetAddress() + " disconnected");
+            				inFromClient.close();	
+            				outToClient.close();
+            				connectionSocket.close();
+            				done = true;
+            			}
+				else if(tok.hasMoreTokens())
+				{
+					frstln = tok.nextToken();
+					port = Integer.parseInt(frstln);
+					clientCommand = tok.nextToken();
 				
-								if(clientCommand.equals("Keyword:"))							
+				
+					if(clientCommand.equals("Keyword:"))							
 					{
 				
 						//Create socket on server side
@@ -195,17 +199,10 @@ public class NapsterServer {
 						dataSocket.close();
 
 					}
-					else if(clientCommand.equals("close"))
-            				{
-            					//Close all streams and control socket
-            					System.out.println("User" + connectionSocket.getInetAddress() + " disconnected");
-            					inFromClient.close();	
-            					outToClient.close();
-            					connectionSocket.close();
-            					done = true;
-            				}else{
+					else{
             					System.out.println("Command not found: " + clientCommand);
             				}
+				}
 			}while(!done);
 			
 			
