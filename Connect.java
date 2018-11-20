@@ -66,11 +66,17 @@ public class Connect implements ActionListener {
 		if(e.getActionCommand() == "Go"){
 			String command = gui.getCommand().getText();
 			
-			//Call host command as long as there is text in text field
-			if(!command.equals(""))
-			{
-				host.command(command);
-			}		
+			try{
+				//Call host command as long as there is text in text field
+				if(!command.equals(""))
+				{
+					host.command(command);
+				}
+			}catch(UnknownHostException h){
+				System.out.println("Error");
+			}catch(IOException io){
+				System.out.println("Error");
+			}	
 		
 			//Clear textfield		
 			gui.getCommand().setText("");
