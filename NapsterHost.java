@@ -93,7 +93,7 @@ public class NapsterHost{
 
 		//Get server port number 
 		int serverPort = Integer.parseInt(in.readUTF());
-			
+			//Start new thread to be ready for a peer connection.
 		HostServer handler = new HostServer(serverPort);
 		handler.start();
 		
@@ -264,8 +264,11 @@ class HostHandler extends Thread{
 	public void run(){
 			try {
 				outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-            	inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+				inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+				
+				//Keep looping while peer is connected.
             	while(true){
+					//Wait until there is a message to read.
             	while(!inFromClient.ready());
             	Thread.sleep(500);
             	
@@ -275,11 +278,14 @@ class HostHandler extends Thread{
             	StringTokenizer tok = new StringTokenizer(command.substring(2));
             	
             	String com = tok.nextToken();
-            	System.out.println(com);
+				System.out.println(com);
+				
+				//If peer sends quit, close socket.
             	if(com.equals("quit")){
             		connectionSocket.close();
             		return;
-            	}
+				}
+				//If peer sends retr, send followed file.
             	else if(com.equals("retr")){
             		String fileName = tok.nextToken();
             		int prt = Integer.parseInt(tok.nextToken());
@@ -319,9 +325,10 @@ class HostServer extends Thread{
 	}
 	
 	public void run(){
+		//Keep a server socket ready to accept requests.
 		while(true)
         {
-	//Wait for connection from client
+	//Wait for connection from client and start a new thread for that client.
             try {
 				Socket connectionSocket = welcomeSocket.accept();
 				HostHandler handler = new HostHandler(connectionSocket);
@@ -334,5 +341,4 @@ class HostServer extends Thread{
     }
 	}
 }
-
 
