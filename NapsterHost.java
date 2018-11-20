@@ -1,3 +1,19 @@
+/*******************************************
+* NapsterHost.java
+* CIS 457-10
+* Dylan Shoup
+* Ali Scheffler
+* 11/20/2018
+*
+* This class implements the remote host and
+* remote server for Napster project. Contains
+* functions to connect to centralized server, 
+* search for files based on a keyword, disconnect
+* from centralized server, connect to remote 
+* server, request file from remote server, and
+* disconnect from remote server.
+*******************************************/
+
 import javax.swing.*;
 import java.net.*;
 import java.io.*;
@@ -21,31 +37,39 @@ public class NapsterHost{
 		gui.addWindowListener(new Disconnect(gui, this));
 	}
 	
+	/*Connect to centralized server
+	* Returns true if successful connection and false if unsuccessful	
+	*/
 	public boolean ConnectToServer() throws NumberFormatException, UnknownHostException, IOException, InterruptedException {
-		
+		//Get information from text fields
 		String serverHostname = gui.getServerHostname().getText();
 		String portNumber = gui.getPort().getText();
 		String hostname = gui.getHostName().getText();
 		String username = gui.getUsername().getText();
 		String speed = gui.getSpeed().getSelectedItem().toString();
 
+		//Make sure all text fields have text
 		if((serverHostname.equals("")) || (portNumber.equals("")) || (hostname.equals("")) || (username.equals("")) || (speed.equals("")))
 		{
 			System.out.println("Invalid input\n");
 			return false;
 		}
-
+	
+		//Setup control socket and output/input streams
 		controlSocket = new Socket(serverHostname, Integer.parseInt(portNumber));
 		out = new DataOutputStream(controlSocket.getOutputStream());
 		in = new DataInputStream(controlSocket.getInputStream());
 		
+		//Write to server
 		out.writeUTF(username +" "+ hostname + " "+ speed +"\n");
 	
 		while(in.available() <=0 );
 		Thread.sleep(500);
 		
+		//Read in acknowledgement
 		String ack = in.readUTF();
 		
+		//If no acknowledgement return false
 		if(!ack.equals("received")){
 			
 			System.out.println("Error getting info!");
@@ -53,13 +77,11 @@ public class NapsterHost{
 		}
 		
 		File fileList = new File("filelist.xml");
-		
 		OutputStreamWriter outToServer = new OutputStreamWriter(controlSocket.getOutputStream(), "UTF-8");
-		
 		BufferedReader read = new BufferedReader(new FileReader(fileList));
-
 		String str;
 
+		//Read in from filelist.xml and write results to server
 		while((str = read.readLine()) != null)
 		{
 			out.writeUTF(str + "\n");
@@ -68,6 +90,8 @@ public class NapsterHost{
 		}
 		while(in.available() <= 0);
 		Thread.sleep(500);
+
+		//Get server port number 
 		int serverPort = Integer.parseInt(in.readUTF());
 			
 		HostServer handler = new HostServer(serverPort);
@@ -76,9 +100,11 @@ public class NapsterHost{
 		return true;
 	}
 
+	/*Find files that match keyword*/
 	public void search(String keyword)
 	{
 		try{
+		//Clear GUI files table
 		gui.removeAllRows();
 
 		//Create output stream
@@ -127,11 +153,11 @@ public class NapsterHost{
 			System.out.println("Exception");
 		}catch(InterruptedException e)
 		{
-			//
+			System.out.println("Exception");
 		}
 		
 	}
-	//Connects to other host machine or retrieves file from connected host machine.
+	/*Connects to other host machine or retrieves file from connected host machine.*/
 	public void command(String command) throws NumberFormatException, UnknownHostException, IOException{
 		
 		StringTokenizer tok = new StringTokenizer(command);
@@ -200,6 +226,7 @@ public class NapsterHost{
 		}
 	}
 	
+	/*Disconnect from centralized servers*/
 	public void disconnect()
 	{
 		try{

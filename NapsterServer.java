@@ -1,3 +1,18 @@
+/***********************************************************
+* NapsterServer.java
+* CIS 457-10
+* Dylan Shoup
+* Ali Scheffler
+*
+* This class is used to implement the centralized server. 
+* It allows multiple hosts to connect to the server and upload
+* an xml file that contains filenames and descriptions of the 
+* files they own. Keeps track of users and files in two 
+* separate tables. Upon a request to search for a file with 
+* a matching keyword the server sends the information through
+* TCP connection to host.  
+***********************************************************/
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -45,10 +60,10 @@ public class NapsterServer {
 		private Map<String,User> userTable;
 		private Map<String,FileEntry> fileTable;
             	String fromClient;
-                	String clientCommand ="";
-                	byte[] data;
-                	int port;
-                	User curr;
+                String clientCommand ="";
+                byte[] data;
+                int port;
+                User curr;
             	
             	public ClientHandler(Socket connectionSocketIn, Map<String,User> userTable, Map<String,FileEntry> fileTable, int port){
             	
@@ -76,7 +91,6 @@ public class NapsterServer {
 					
 					//Read line in from client
             				fromClient = inFromClient.readLine();
-            			
 					
             				//Get command
                         		StringTokenizer tokens = new StringTokenizer(fromClient);
@@ -105,13 +119,14 @@ public class NapsterServer {
             			do{
 					
                         		fromClient = inFromClient.readLine();
+
+					//Create regular expression pattern to filter out the names and descriptions
 					Pattern pattern = Pattern.compile("\\s*+<name>(.*?)</name>\\s*");
 					Pattern pattern2 = Pattern.compile("\\s*+<description>(.*?)</description>\\s*");
 
-										
-
 					if(fromClient != null)
 					{		
+						//End of file marked by </filelist>
 						if(fromClient.contains("</filelist>"))
 						{
 							done = true;
@@ -139,7 +154,9 @@ public class NapsterServer {
             	  									   						   
             		}while(!done);
             			outToClient.writeUTF(Integer.toString(port));
-			done = false;
+		
+				//Reset value of done
+				done = false;
 			do{
 					
 					fromClient = inFromClient.readLine();
@@ -148,6 +165,21 @@ public class NapsterServer {
 
 				if(fromClient.equals("Close"))
             			{
+					//When host disconnects remove their files from fileTable
+					List<String> toRemove = new ArrayList<String>();
+            			
+            				for (Map.Entry<String, FileEntry> entry : fileTable.entrySet()) {
+            			   		String key = entry.getKey();
+            			    		FileEntry value = entry.getValue();
+
+            			    		if(value.userName.equals(curr.userName)){
+            			    			toRemove.add(key);
+            			    		}
+            		   	 	}
+            				for(String x : toRemove){
+            					fileTable.remove(x);
+            				}
+
             				//Close all streams and control socket
             				System.out.println("User" + connectionSocket.getInetAddress() + " disconnected");
             				inFromClient.close();	
@@ -161,7 +193,6 @@ public class NapsterServer {
 					port = Integer.parseInt(frstln);
 					clientCommand = tok.nextToken();
 				
-				
 					if(clientCommand.equals("Keyword:"))							
 					{
 				
@@ -173,6 +204,7 @@ public class NapsterServer {
 					
 						String key = tok.nextToken();
 						
+						//Use to iterate through files table
 						Iterator it = fileTable.entrySet().iterator();
 	
 						String found = null;
@@ -180,23 +212,28 @@ public class NapsterServer {
 						while(it.hasNext())
 						{
 							Map.Entry entry = (Map.Entry) it.next();
-							
 							FileEntry file = (FileEntry) entry.getValue(); 
+
+							//If match send information to host
 							if(file.description.contains(key))
 							{
 								//Send remote host name, port number, remote file name, connection speed
 								//Search user's table for info
 								User remoteHost = userTable.get(file.userName);
 								found = remoteHost.hostName + " " + file.portNumber + " " + file.remoteFileName + " " + remoteHost.speed;
-								System.out.println(found);
+								//Write to host
 								out.writeUTF(found + " \n");
 							}
 						}
-
+						//Send in case no match found
 					 	out.writeUTF("\n");
 						
+						//Close stream and socket
 						out.close();
 						dataSocket.close();
+						
+						//Done
+						done = true;
 
 					}
 					else{
@@ -207,6 +244,7 @@ public class NapsterServer {
 			
 			
             		}catch(IOException iox){
+				//Remove files from table if exception occurs
             			List<String> toRemove = new ArrayList<String>();
             			
             			for (Map.Entry<String, FileEntry> entry : fileTable.entrySet()) {
@@ -217,7 +255,7 @@ public class NapsterServer {
             			    	toRemove.add(key);
             			    }
             			
-            		    }
+            		   	 }
             			for(String x : toRemove){
             				fileTable.remove(x);
             			}

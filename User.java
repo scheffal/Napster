@@ -1,3 +1,10 @@
+/*******************************************
+* User.java
+*
+* This class sets up the structure for an 
+* entry for the users table.
+*******************************************/
+
 public class User{
 
     protected String userName;
@@ -13,3 +20,4 @@ public class User{
     }
 
 }
+

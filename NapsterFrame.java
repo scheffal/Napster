@@ -1,3 +1,13 @@
+/*******************************************
+* NapsterFrame.java
+*
+* This class is used to implement the GUI 
+* for Napster Host. Creates a GUI with 
+* options to connect to centralized server, 
+* search for a file, and connect to remote 
+* server.
+*******************************************/
+
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.*;
@@ -18,7 +28,7 @@ public class NapsterFrame extends JFrame{
 	@SuppressWarnings("rawtypes")
 	private JComboBox speed;
 	private JTable filesTable;
-	DefaultTableModel model;
+	private DefaultTableModel model;
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public NapsterFrame() {
@@ -29,12 +39,14 @@ public class NapsterFrame extends JFrame{
 		setLayout(new BorderLayout());
 		
 		
-		//Create panels
+		//Create connect panel
 		JPanel connectPanel = new JPanel(new GridBagLayout());
 		connectPanel.setPreferredSize(new Dimension(100,100));
 		
+		//Create search panel
 		JPanel searchPanel = new JPanel(new GridBagLayout());
 		
+		//Create FTP panel
 		JPanel ftpPanel = new JPanel(new GridBagLayout());
 		ftpPanel.setPreferredSize(new Dimension(250,250));
 		
@@ -73,14 +85,14 @@ public class NapsterFrame extends JFrame{
 		Label keywordLabel = new Label("Keyword:");
 		search = new JButton("Search");
 		search.setEnabled(false);
-	
+			
+		//Create default table model to later add rows of data to
 		model = new DefaultTableModel();
 		filesTable = new JTable(model);
 
 		model.addColumn("Speed");
 		model.addColumn("Hostname");
 		model.addColumn("Filename");
-		
 		
 		//FTP pane
 		command = new TextField(50);
@@ -99,6 +111,7 @@ public class NapsterFrame extends JFrame{
 		add(searchPanel,BorderLayout.CENTER);
 		add(ftpPanel, BorderLayout.SOUTH);
 		
+		//Add components to panel 
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.insets = new Insets(2,4,2,2);
 		
@@ -179,6 +192,8 @@ public class NapsterFrame extends JFrame{
 		s.gridx = 1;
 		s.weightx = 3;
 		s.gridheight = 10;
+
+		//Set the file table to scroll and add to panel
 		filesTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		filesTable.setFillsViewportHeight(true); 
 		JScrollPane table = new JScrollPane(filesTable);
@@ -201,22 +216,30 @@ public class NapsterFrame extends JFrame{
 		f.gridy = 1;
 		f.gridwidth = 3;
 		f.gridheight = 10;
+
+		//Set FTP text area to scroll and add to panel
 		JScrollPane scroll = new JScrollPane(ftpDisplay);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		ftpPanel.add(scroll,f);
 		pack();
+
+		//Make frame visible
 		setVisible(true);
 	}
+
+	/*Enable or disable search button*/
 	public void setSearch(boolean val)
 	{
 		search.setEnabled(val);
 	}	
 
+	/*Add a row to the files table*/
 	public void addRow(String fileName, String host, String speed){
 		model.addRow(new Object[] {fileName, host, speed});
 	
 	}
 
+	/*Remove all rows from files table*/
 	public void removeAllRows()
 	{
 		model.setRowCount(0);

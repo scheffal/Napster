@@ -1,25 +1,35 @@
+/*******************************************
+* Connect.java
+*
+* This class is used to call the host 
+* functions when an action occurs in the
+* GUI. 
+*******************************************/
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
 public class Connect implements ActionListener {
-	NapsterFrame gui;
-	NapsterHost host;
+	private NapsterFrame gui;
+	private NapsterHost host;
 	
 	public Connect (NapsterFrame gui, NapsterHost host)
-	{
-		
+	{	
 		this.gui = gui;
 		this.host = host;
 	}
 	
+	/*Handle action events from NapsterFrame*/
 	public void actionPerformed(ActionEvent e)
 	{
 		if(e.getActionCommand() == "Connect") {
 		
 
 			try {
+				//Try to connect to server
 				boolean success = host.ConnectToServer();
+
+				//Searching is enabled upon successful connection
 				if(success)
 				{
 					gui.setSearch(true);
@@ -44,6 +54,7 @@ public class Connect implements ActionListener {
 		{
 			String key = gui.getKeyword().getText();
 			
+			//Call function as long as there is text in the text field
 			if(!key.equals(""))
 			{
 				//Call host search function
@@ -55,15 +66,15 @@ public class Connect implements ActionListener {
 		if(e.getActionCommand() == "Go"){
 			String command = gui.getCommand().getText();
 			
-			try {
-				if(!command.equals(""))
-				{
-					host.command(command);
-				}				
-				gui.getCommand().setText("");
-			} catch (NumberFormatException | IOException e1) {
-				e1.printStackTrace();
-			}
+			//Call host command as long as there is text in text field
+			if(!command.equals(""))
+			{
+				host.command(command);
+			}		
+		
+			//Clear textfield		
+			gui.getCommand().setText("");
+			
 		}
 
 	}

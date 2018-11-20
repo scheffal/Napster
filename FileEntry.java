@@ -1,3 +1,10 @@
+/*******************************************
+* FileEntry.java
+*
+* This class sets up the structure for an 
+* entry for the file table.
+*******************************************/
+
 public class FileEntry{
 	protected String userName;
 	protected int portNumber;
